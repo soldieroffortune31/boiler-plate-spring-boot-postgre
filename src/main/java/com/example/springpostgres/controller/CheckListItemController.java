@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.springpostgres.model.CheckListItemResponse;
 import com.example.springpostgres.model.CreateCheckListItemRequest;
+import com.example.springpostgres.model.UpdateCheckListItemRequest;
 import com.example.springpostgres.model.WebResponse;
 import com.example.springpostgres.security.CustomWebAuthenticationDetails;
 import com.example.springpostgres.service.CheckListItemService;
@@ -68,6 +70,25 @@ public class CheckListItemController {
         CheckListItemResponse checkListItemResponse = checkListItemService.getById(checkListId, checkListItemId, penggunaId);
 
         return WebResponse.<CheckListItemResponse>builder().code(HttpStatus.OK.value()).message("OK").data(checkListItemResponse).build();
+
+    }
+
+    @PutMapping(
+        path = "/checklist/{checkListId}/item/{checkListItemId}",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public WebResponse<CheckListItemResponse> update(@PathVariable("checkListId") Integer checkListId, @PathVariable("checkListItemId") Integer checkListItemId, @RequestBody UpdateCheckListItemRequest request){
+
+        CustomWebAuthenticationDetails details = (CustomWebAuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails();
+
+        Integer penggunaId = details.getPenggunaId();
+        request.setCheckListId(checkListId);
+        request.setCheckListItemId(checkListItemId);
+        request.setPenggunaId(penggunaId);
+        CheckListItemResponse update = checkListItemService.update(request);
+
+        return WebResponse.<CheckListItemResponse>builder().code(HttpStatus.OK.value()).message("OK").data(update).build();
 
     }
 

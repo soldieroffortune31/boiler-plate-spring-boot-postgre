@@ -12,6 +12,7 @@ import com.example.springpostgres.entity.CheckList;
 import com.example.springpostgres.entity.CheckListItem;
 import com.example.springpostgres.model.CheckListItemResponse;
 import com.example.springpostgres.model.CreateCheckListItemRequest;
+import com.example.springpostgres.model.UpdateCheckListItemRequest;
 import com.example.springpostgres.repository.CheckListItemRepository;
 import com.example.springpostgres.repository.CheckListRepository;
 
@@ -65,6 +66,24 @@ public class CheckListItemService {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item Todo Tidak Ditemukan"));
 
         return toCheckListItemResponse(checkListItem);
+    }
+
+    public CheckListItemResponse update(UpdateCheckListItemRequest request){
+
+        validationService.validate(request);
+
+        CheckList checkList = checkListRepository.findFirstByChecklistIdAndPengguna_PenggunaId(request.getCheckListId(), request.getPenggunaId())
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Todo Tidak Ditemukan"));
+
+        CheckListItem checkListItem = checkListItemRepository.findFirstByCheckListAndCheckListItemId(checkList, request.getCheckListItemId())
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item Todo Tidak Ditemukan"));
+
+        checkListItem.setCheckListItemNama(request.getItemName());
+        checkListItem.setStatusAktif(request.getStatusActive());
+        checkListItemRepository.save(checkListItem);
+
+        return toCheckListItemResponse(checkListItem);
+
     }
 
     @Transactional
