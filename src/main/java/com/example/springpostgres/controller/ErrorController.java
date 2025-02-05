@@ -51,7 +51,7 @@ public class ErrorController {
     // Disini juga bisa ditambah validasi misal jika mau menambahkan message value harus boolen, harus interger, dll
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<WebResponse<String>> handleJsonParseException(HttpMessageNotReadableException ex){
-        System.out.println(ex.getMessage());
+        System.out.println("kesini kah ? ke exception");
         if(ex.getCause() instanceof MismatchedInputException mismatchedInputEx){
 
             List<Reference> path = mismatchedInputEx.getPath();

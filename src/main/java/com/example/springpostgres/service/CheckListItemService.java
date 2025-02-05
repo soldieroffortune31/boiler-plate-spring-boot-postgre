@@ -59,10 +59,22 @@ public class CheckListItemService {
     @Transactional(readOnly = true)
     public CheckListItemResponse getById(Integer checkListId, Integer checkListItemId, Integer penggunaId){
 
-        CheckList checkList = checkListRepository.findFirstByChecklistIdAndPengguna_PenggunaId(checkListId, penggunaId)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Todo Tidak Ditemukan"));
+        /** disini jika mau query satu per satu
+         * 
+         * disini tergantung api contract nya mau seperti apa responsenya
+         * jika response ingin validasi 1 per satu maka lakukan 1 persatu query
+         * jika tidak maka lakukan langsung query join
+         * 
+         CheckList checkList = checkListRepository.findFirstByChecklistIdAndPengguna_PenggunaId(checkListId, penggunaId)
+             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Todo Tidak Ditemukan"));
+ 
+         CheckListItem checkListItem = checkListItemRepository.findFirstByCheckListAndCheckListItemId(checkList, checkListItemId)
+             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item Todo Tidak Ditemukan"));
+         * 
+         */
 
-        CheckListItem checkListItem = checkListItemRepository.findFirstByCheckListAndCheckListItemId(checkList, checkListItemId)
+         //ini query jika langsung menggunakan join
+         CheckListItem checkListItem = checkListItemRepository.findCheckListItem(checkListItemId, checkListId, penggunaId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item Todo Tidak Ditemukan"));
 
         return toCheckListItemResponse(checkListItem);
