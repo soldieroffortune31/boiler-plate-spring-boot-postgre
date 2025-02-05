@@ -1,5 +1,6 @@
 package com.example.springpostgres.model;
 
+// import com.example.springpostgres.validation.BooleanValue;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.validation.constraints.NotBlank;
@@ -32,6 +33,8 @@ public class UpdateCheckListItemRequest {
     @Size(max = 100)
     private String itemName;
 
+    //validasi boolean mungkin bisa dilakukan di level service, karena di controller udh dianggap error jika valunya tidak sesuai
+    // @BooleanValue(message = "statusActice harus bernilai true atau false")
     @NotNull
     private Boolean statusActive;
 

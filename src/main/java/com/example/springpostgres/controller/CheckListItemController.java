@@ -21,6 +21,8 @@ import com.example.springpostgres.model.WebResponse;
 import com.example.springpostgres.security.CustomWebAuthenticationDetails;
 import com.example.springpostgres.service.CheckListItemService;
 
+import jakarta.validation.Valid;
+
 @RestController
 public class CheckListItemController {
 
@@ -78,8 +80,9 @@ public class CheckListItemController {
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public WebResponse<CheckListItemResponse> update(@PathVariable("checkListId") Integer checkListId, @PathVariable("checkListItemId") Integer checkListItemId, @RequestBody UpdateCheckListItemRequest request){
+    public WebResponse<CheckListItemResponse> update(@PathVariable("checkListId") Integer checkListId, @PathVariable("checkListItemId") Integer checkListItemId, @Valid @RequestBody UpdateCheckListItemRequest request){
 
+        System.out.println("kesini dulu");
         CustomWebAuthenticationDetails details = (CustomWebAuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails();
 
         Integer penggunaId = details.getPenggunaId();

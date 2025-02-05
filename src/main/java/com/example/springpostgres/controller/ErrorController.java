@@ -1,14 +1,19 @@
 package com.example.springpostgres.controller;
 
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.springpostgres.model.WebResponse;
+import com.fasterxml.jackson.databind.JsonMappingException.Reference;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 
 import io.jsonwebtoken.JwtException;
 import jakarta.validation.ConstraintViolationException;
@@ -38,6 +43,31 @@ public class ErrorController {
     public ResponseEntity<WebResponse<String>> handleAccessDenied(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
             .body(WebResponse.<String>builder().code(HttpStatus.UNAUTHORIZED.value()).message("Unauthorized").build());
+    }
+
+
+    // bisa pake cara ini jika validasi true or false (cara ini tidak detail menujukkan pada field/key yang mana)
+    // Disini itu gak hanya boolean yang di validasi jika nilainya tidak sesuai, tapi bisa juga integer yang diisi string, maka akan masuk ke exception ini
+    // Disini juga bisa ditambah validasi misal jika mau menambahkan message value harus boolen, harus interger, dll
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<WebResponse<String>> handleJsonParseException(HttpMessageNotReadableException ex){
+        System.out.println(ex.getMessage());
+        if(ex.getCause() instanceof MismatchedInputException mismatchedInputEx){
+
+            List<Reference> path = mismatchedInputEx.getPath();
+
+            if(!path.isEmpty()){
+
+                String fieldName = path.get(0).getFieldName();
+                String errorMessage = fieldName + ": Format data tidak valid" ;
+
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(WebResponse.<String>builder().code(HttpStatus.BAD_REQUEST.value()).message(errorMessage).build());
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(WebResponse.<String>builder().code(HttpStatus.BAD_REQUEST.value()).message("Terjadi kesalahan dalam membaca permintaan").build());
     }
 
     @ExceptionHandler(Exception.class)
