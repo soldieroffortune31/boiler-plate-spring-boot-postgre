@@ -39,6 +39,7 @@ public class SecurityConfig {
                 authorizeRequests
                     .requestMatchers("/login").permitAll()
                     .requestMatchers("/register").permitAll()
+                    .requestMatchers("/image/**").permitAll()
                     .anyRequest().authenticated()
             )
             .exceptionHandling(ex -> {
