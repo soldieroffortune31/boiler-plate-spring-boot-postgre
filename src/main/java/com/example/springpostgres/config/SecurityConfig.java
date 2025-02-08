@@ -33,13 +33,14 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        System.out.println("haha");
         http.csrf(csrf -> csrf.disable()) // Nonaktifkan CSRF
             .authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
                     .requestMatchers("/login").permitAll()
                     .requestMatchers("/register").permitAll()
                     .requestMatchers("/image/**").permitAll()
+                    // .requestMatchers("/api/v1/Books/**").permitAll()
+                    .requestMatchers("/v1/books/**").permitAll()
                     .anyRequest().authenticated()
             )
             .exceptionHandling(ex -> {
@@ -59,7 +60,7 @@ public class SecurityConfig {
         return (request, response, authException) -> {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Status 401
             response.setContentType("application/json");
-            response.getWriter().write(objectMapper.writeValueAsString(WebResponse.builder().code(HttpServletResponse.SC_UNAUTHORIZED).message("Unauthorized").build()));
+            response.getWriter().write(objectMapper.writeValueAsString(WebResponse.builder().code(HttpServletResponse.SC_UNAUTHORIZED).message("aUnauthorized").build()));
         };
     }
 }

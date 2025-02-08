@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.security.access.AccessDeniedException;
+// import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -19,7 +19,7 @@ import com.example.springpostgres.model.WebResponse;
 import com.fasterxml.jackson.databind.JsonMappingException.Reference;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 
-import io.jsonwebtoken.JwtException;
+// import io.jsonwebtoken.JwtException;
 import jakarta.validation.ConstraintViolationException;
 
 @RestControllerAdvice
@@ -37,17 +37,19 @@ public class ErrorController {
             .body(WebResponse.<String>builder().code(exception.getStatusCode().value()).message(exception.getReason()).build());
     }
 
-    @ExceptionHandler({JwtException.class, SecurityException.class})
-    public ResponseEntity<WebResponse<String>> handleUnauthorized(Exception ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-            .body(WebResponse.<String>builder().code(HttpStatus.UNAUTHORIZED.value()).message(ex.getMessage()).build());
-    }
+    // @ExceptionHandler({JwtException.class, SecurityException.class})
+    // public ResponseEntity<WebResponse<String>> handleUnauthorized(Exception ex) {
+    //     System.out.println(ex.getMessage());
+    //     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+    //         .body(WebResponse.<String>builder().code(HttpStatus.UNAUTHORIZED.value()).message(ex.getMessage()).build());
+    // }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<WebResponse<String>> handleAccessDenied(AccessDeniedException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-            .body(WebResponse.<String>builder().code(HttpStatus.UNAUTHORIZED.value()).message("Unauthorized").build());
-    }
+    // @ExceptionHandler(AccessDeniedException.class)
+    // public ResponseEntity<WebResponse<String>> handleAccessDenied(AccessDeniedException ex) {
+    //     System.out.println(ex.getMessage());
+    //     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+    //         .body(WebResponse.<String>builder().code(HttpStatus.UNAUTHORIZED.value()).message("Unauthorized").build());
+    // }
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public ResponseEntity<WebResponse<String>> handleMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex) {
@@ -100,13 +102,13 @@ public class ErrorController {
             .body("File Not Found");
     }
 
-    // @ExceptionHandler(Exception.class)
-    // public ResponseEntity<WebResponse<String>> genericException(Exception ex){
-    //     System.out.println(ex.getMessage());
-    //     System.out.println(ex.getStackTrace());
-    //     System.out.println(ex.getLocalizedMessage());
-    //     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-    //         .body(WebResponse.<String>builder().code(HttpStatus.INTERNAL_SERVER_ERROR.value()).message("Internal Server Error").build());
-    // }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<WebResponse<String>> genericException(Exception ex){
+        System.out.println(ex.getMessage());
+        System.out.println(ex.getStackTrace());
+        System.out.println(ex.getLocalizedMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(WebResponse.<String>builder().code(HttpStatus.INTERNAL_SERVER_ERROR.value()).message("Internal Server Error").build());
+    }
 
 }
