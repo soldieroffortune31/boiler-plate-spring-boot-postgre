@@ -1,5 +1,6 @@
 package com.example.springpostgres.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,10 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.springpostgres.entity.CheckList;
+import com.example.springpostgres.entity.CheckListItem;
 import com.example.springpostgres.entity.Pengguna;
 import com.example.springpostgres.model.CheckListResponse;
 import com.example.springpostgres.model.CreateCheckListRequest;
+import com.example.springpostgres.model.CreateCheckListWithItemsRequst;
 import com.example.springpostgres.model.UpdateCheckListRequst;
+import com.example.springpostgres.repository.CheckListItemRepository;
 import com.example.springpostgres.repository.CheckListRepository;
 import com.example.springpostgres.repository.PenggunaRepository;
 
@@ -29,6 +33,9 @@ public class CheckListService {
 
     @Autowired
     private CheckListRepository checkListRepository;
+
+    @Autowired
+    private CheckListItemRepository checkListItemRepository;
 
     @Autowired
     private ValidationService validationService;
@@ -79,6 +86,35 @@ public class CheckListService {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Todo tidak ditemukan"));
 
         checkListRepository.delete(checkList);
+    }
+
+    @Transactional
+    public void createWithItems(CreateCheckListWithItemsRequst request){
+
+        validationService.validate(request);
+
+        Pengguna pengguna = penggunaRepository.findById(request.getPenggunaId())
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pengguna tidak ditemukan"));
+
+        CheckList checkList = new CheckList();
+        checkList.setCheckListNama(request.getName());
+        checkList.setPengguna(pengguna);
+        checkListRepository.save(checkList);
+
+        // Integer checkListId = checkList.getChecklistId();
+        List<CheckListItem> items = new ArrayList<>();
+
+        for (int index = 0; index < request.getItems().size(); index++) {
+            
+            CheckListItem item = new CheckListItem();
+            item.setCheckList(checkList);
+            item.setCheckListItemNama(request.getItems().get(index).getItemName());
+            item.setStatusAktif(true);
+            items.add(item);
+        }
+
+        checkListItemRepository.saveAll(items);
+        
     }
 
 

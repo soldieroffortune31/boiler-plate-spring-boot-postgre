@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.springpostgres.model.CheckListResponse;
 import com.example.springpostgres.model.CreateCheckListRequest;
+import com.example.springpostgres.model.CreateCheckListWithItemsRequst;
 import com.example.springpostgres.model.UpdateCheckListRequst;
 import com.example.springpostgres.model.WebResponse;
 import com.example.springpostgres.security.CustomWebAuthenticationDetails;
@@ -91,6 +92,23 @@ public class CheckListController {
         checkListService.deleteCheckListByID(checkListId, penggunaId);
 
         return WebResponse.<String>builder().code(HttpStatus.OK.value()).message("OK").build();
+
+    }
+
+    @PostMapping(
+        path = "/checklistwithitems",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public WebResponse<String> createWithItems(@RequestBody CreateCheckListWithItemsRequst request){
+
+        CustomWebAuthenticationDetails details = (CustomWebAuthenticationDetails) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        Integer penggunaId = details.getPenggunaId();
+        request.setPenggunaId(penggunaId);
+        
+        checkListService.createWithItems(request);
+
+        return WebResponse.<String>builder().build();
 
     }
 
